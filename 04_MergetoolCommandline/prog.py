@@ -10,6 +10,7 @@ class Cool_names_cmd(cmd.Cmd):
     intro = "Ryan Gosling. Drive"
     prompt = "<3 "
     lang = pynames.LANGUAGE.NATIVE
+    info_buf = ['male', 'female', 'language']
     if True:
         gens = [module_name for _, module_name, _ in pkgutil.iter_modules([pynames.generators.generators_root])]
         subgens = {gen_name: {subgen_name.replace("NamesGenerator", "").replace("FullnameGenerator", ""): gen
@@ -56,6 +57,8 @@ class Cool_names_cmd(cmd.Cmd):
                 print("Wrong number of arguments")
         if gender.upper() == "FEMALE":
             gender = pynames.GENDER.FEMALE
+        else:
+            gender = pynames.GENDER.MALE
         cur_language = self.lang if self.lang in gen_class().languages else pynames.LANGUAGE.NATIVE
         print(gen_class().get_name_simple(gender, cur_language))
         # print(gen_class.language)
@@ -106,10 +109,36 @@ class Cool_names_cmd(cmd.Cmd):
         return [s for s in pynames.LANGUAGE.ALL if s.startswith(prefix)]
 
 
-    # def complete_info(self, prefix, allcmd, beg, end):
-        # """Completion of info"""
-        # arg_num = len(shlex.split(allcmd))
-        # if arg
+    def complete_info(self, prefix, allcmd, beg, end):
+        """Completion of info"""
+        params = shlex.split(allcmd)
+        arg_num = len(params)
+        
+        if arg_num == 1 or len(shlex.split(allcmd)) == 2 and prefix != '':
+            return list(filter(lambda x: x.startswith(prefix), self.simple_gens))
+        elif arg_num == 2 or len(shlex.split(allcmd)) == 3 and prefix != '':
+            if params[1] in self.simple_gens:
+                return list(filter(lambda x: x.startswith(prefix), self.compl_gens),
+                            filter(lambda x: x.startswith(prefix), self.info_buf))
+            else:
+                return list(filter(lambda x: x.startswith(prefix), self.info_buf))
+        else:
+            return []
+
+    def complete_generate(self, prefix, allcmd, beg, end):
+        """Completion of generate"""
+        params = shlex.split(allcmd)
+        arg_num = len(params)
+        
+        if arg_num == 1 or len(shlex.split(allcmd)) == 2 and prefix != '':
+            return list(filter(lambda x: x.startswith(prefix), self.simple_gens))
+        elif arg_num == 2 or len(shlex.split(allcmd)) == 3 and prefix != '':
+            if params[1] in self.simple_gens:
+                return list(filter(lambda x: x.startswith(prefix), self.compl_gens))
+            else:
+                return []
+        else:
+            return []
         
 
 
